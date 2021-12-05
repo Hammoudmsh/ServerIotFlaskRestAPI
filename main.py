@@ -51,7 +51,12 @@ def serve_layout():
                             #---------------------------------------------------
 
                           dcc.Tabs([
-
+                                dcc.Tab(label="Temper1 (var to be monitored)",style={'background': "grey"},children=[
+                                    dcc.Graph(id='live-graph', animate=True),
+                                    dcc.Interval(
+                                        id='graph-update',
+                                        interval=2000 )
+                                ]),
                                 #---------------------------------------------------
                                 dcc.Tab(label=SECTION['var'],style={'background': "grey"},children=[
                                             dcc.Graph(id="g1",
@@ -85,13 +90,7 @@ def serve_layout():
                                                     'font': {
                                                         'color': "#ff00ff"#themes['text']
                                                     }
-                                                        })]),
-                                dcc.Tab(label="Test_Auto_update_1Sec",style={'background': "grey"},children=[
-                                    dcc.Graph(id='live-graph', animate=True),
-                                    dcc.Interval(
-                                        id='graph-update',
-                                        interval=10000 )
-                                ])
+                                                        })])
                         ])
                         ])
 
@@ -101,9 +100,7 @@ SECTION = {"Temerature":"temperature..",
             }
 
 X = deque(maxlen=50)
-X.append(1)
 Y = deque(maxlen=50)
-Y.append(1)
 
 X1 = deque(maxlen=50)
 Y1 = deque(maxlen=50)
@@ -155,17 +152,18 @@ app.layout = serve_layout()
               [Input('graph-update', 'n_intervals')])
 def update_graph_scatter(input_data):
     global sensors_val_last, X, Y
-    #X.append(datetime.datetime.now())
-    X.append(X[-1]+1)
+    X.append(datetime.datetime.now())
     Y.append(sensors_val_last["Temp1"])
-    data = plotly.graph_objs.Scatter(
-            x=list(X),
-            y=list(Y),
-            name='Scatter',
-            mode= 'lines+markers'
-            )
-
-    return  {'data': [data],
+    #data = plotly.graph_objs.Scatter(
+    #        x=list(X),
+    #        y=list(Y),
+    #        name='Temp1',
+    #        mode= 'lines+markers',
+    #        marker = {'size': 12},
+    #        )
+    data = [{ 'x': list(X), 'y': list(Y),'marker': {'size': 12},'mode':'lines+markers','name': 'Room1' }]#,
+    
+    return  {'data': data,
             'layout':go.Layout(
             title="Sensor_output",
             plot_bgcolor="#FFF",  # Sets background color to white
@@ -244,4 +242,3 @@ def update_output(n_clicks, value):
     return txt, fig
 
 app.run_server()
-
