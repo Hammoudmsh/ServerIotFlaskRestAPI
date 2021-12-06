@@ -1,0 +1,2 @@
+curl --request GET http://localhost:8050/Temp1
+curl --request POST http://localhost:8050/Temp1=3
